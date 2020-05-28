@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: courses-students-test
+  labels:
+    app: courses-students-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: courses-students-test
+  template:
+    metadata:
+      labels:
+        app: courses-students-test
+    spec:
+      containers:
+        - name: courses-students-test
+          image: gcr.io/google_cloud_project/courses-students-test:commit_sha
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 30
+            periodSeconds: 10
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: courses-students-test-svc
+spec:
+  selector:
+    app: courses-students-test
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: LoadBalancer
