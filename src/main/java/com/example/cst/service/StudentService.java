@@ -100,7 +100,7 @@ public class StudentService {
 
         if (!oStudent.isPresent()) {
             log.warn("Student does not exist {}", rut);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Student does not exist");
         }
 
         StudentEntity studentEntity = oStudent.get();
@@ -126,7 +126,7 @@ public class StudentService {
 
         if (!oStudent.isPresent()) {
             log.warn("Student does not exist {}", rut);
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Student does not exist");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Student does not exist");
         }
 
         studentRepository.delete(oStudent.get());
