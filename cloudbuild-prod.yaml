@@ -39,3 +39,10 @@ steps:
         Built from commit ${COMMIT_SHA} of repository courses-students-test
         Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
         git push origin candidate
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Publish API
+    entrypoint: /bin/sh
+    args:
+      - '-c'
+      - |
+        gcloud endpoints services deploy openapi.yaml
