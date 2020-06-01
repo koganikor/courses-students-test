@@ -22,6 +22,8 @@ paths:
               $ref: '#/definitions/Student'
       operationId: getStudents
       parameters: []
+      security:
+        - api_key: []
     post:
       responses:
         '201':
@@ -39,6 +41,8 @@ paths:
           in: body
           schema:
             $ref: '#/definitions/Student'
+      security:
+        - api_key: []
   '/people/{rut}':
     get:
       responses:
@@ -56,6 +60,8 @@ paths:
             $ref: '#/definitions/Error'
       operationId: getStudent
       parameters: []
+      security:
+        - api_key: []
     put:
       responses:
         '200':
@@ -77,12 +83,16 @@ paths:
           in: body
           schema:
             $ref: '#/definitions/Student'
+      security:
+        - api_key: []
     delete:
       responses:
         '204':
           description: Student deleted
       operationId: deleteStudent
       parameters: []
+      security:
+        - api_key: []
     parameters:
       - name: rut
         type: string
@@ -138,5 +148,5 @@ x-components: {}
 securityDefinitions:
   api_key:
     type: "apiKey"
-    name: "X-API-Key"
-    in: "header"
+    name: "key"
+    in: "query"
