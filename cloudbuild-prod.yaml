@@ -1,0 +1,48 @@
+steps:
+  - name: maven:3-jdk-8
+    id: Build
+    entrypoint: mvn
+    args: ['spring-boot:build-image', '-Dspring-boot.build-image.imageName=gcr.io/$PROJECT_ID/courses-students-test:$SHORT_SHA']
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Push
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/courses-students-test:$SHORT_SHA'
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Clone env repository
+    entrypoint: /bin/sh
+    args:
+      - '-c'
+      - |
+        gcloud source repos clone courses-students-test-env && \
+        cd courses-students-test-env && \
+        git checkout candidate && \
+        git config user.email $(gcloud auth list --filter=status:ACTIVE --format='value(account)')
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Generate manifest
+    entrypoint: /bin/sh
+    args:
+      - '-c'
+      - |
+        sed "s/google_cloud_project/${PROJECT_ID}/g" kubernetes.yaml | \
+        sed "s/commit_sha/${SHORT_SHA}/g" > courses-students-test-env/kubernetes.yaml
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Push manifest
+    entrypoint: /bin/sh
+    args:
+      - '-c'
+      - |
+        set -x && \
+        cd courses-students-test-env && \
+        git add kubernetes.yaml && \
+        git commit -m "Deploying image gcr.io/${PROJECT_ID}/courses-students-test:${SHORT_SHA}
+        Built from commit ${COMMIT_SHA} of repository courses-students-test
+        Author: $(git log --format='%an <%ae>' -n 1 HEAD)" && \
+        git push origin candidate
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Publish API
+    entrypoint: /bin/sh
+    args:
+      - '-c'
+      - |
+        gcloud endpoints services deploy openapi.yaml
