@@ -17,6 +17,9 @@ spec:
       containers:
         - name: courses-students-test
           image: gcr.io/google_cloud_project/courses-students-test:commit_sha
+          envFrom:
+            - secretRef:
+                name: db-conn-secret
           ports:
             - containerPort: 8080
           livenessProbe:

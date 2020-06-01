@@ -1,0 +1,142 @@
+swagger: "2.0"
+info:
+  title: courses-students-test
+  version: 1.0.0
+host: "courses-students-test.endpoints.courses-students-test.cloud.goog"
+consumes:
+  - "application/json"
+produces:
+  - "application/json"
+schemes:
+  - "https"
+  - "http"
+paths:
+  /people:
+    get:
+      responses:
+        '200':
+          description: Students found
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Student'
+      operationId: getStudents
+      parameters: []
+    post:
+      responses:
+        '201':
+          description: The student created
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: Request error
+          schema:
+            $ref: '#/definitions/Error'
+      operationId: createStudent
+      parameters:
+        - required: true
+          name: body
+          in: body
+          schema:
+            $ref: '#/definitions/Student'
+  '/people/{rut}':
+    get:
+      responses:
+        '200':
+          description: Student found
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: Request error
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Student not found
+          schema:
+            $ref: '#/definitions/Error'
+      operationId: getStudent
+      parameters: []
+    put:
+      responses:
+        '200':
+          description: Student updated
+          schema:
+            $ref: '#/definitions/Student'
+        '400':
+          description: Request error
+          schema:
+            $ref: '#/definitions/Error'
+        '404':
+          description: Student not found
+          schema:
+            $ref: '#/definitions/Error'
+      operationId: updateStudent
+      parameters:
+        - required: true
+          name: body
+          in: body
+          schema:
+            $ref: '#/definitions/Student'
+    delete:
+      responses:
+        '204':
+          description: Student deleted
+      operationId: deleteStudent
+      parameters: []
+    parameters:
+      - name: rut
+        type: string
+        in: path
+        required: true
+definitions:
+  Student:
+    title: Root Type for Student
+    description: ''
+    type: object
+    properties:
+      rut:
+        type: string
+      name:
+        type: string
+      lastName:
+        type: string
+      age:
+        format: int32
+        type: integer
+      course:
+        type: string
+    example:
+      rut: 1-9
+      name: John
+      lastName: Appleseed
+      age: 42
+      course: Lorem Ipsum
+  Error:
+    title: Root Type for Error
+    description: ''
+    type: object
+    properties:
+      timestamp:
+        format: date-time
+        type: string
+      status:
+        format: int32
+        type: integer
+      error:
+        type: string
+      message:
+        type: string
+      path:
+        type: string
+    example:
+      timestamp: '2020-05-30T12:58:08.397+00:00'
+      status: 404
+      error: Not Found
+      message: ''
+      path: /people/19
+x-components: {}
+securityDefinitions:
+  api_key:
+    type: "apiKey"
+    name: "X-API-Key"
+    in: "header"
